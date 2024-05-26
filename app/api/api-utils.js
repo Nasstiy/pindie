@@ -16,11 +16,12 @@ export const isResponseOk = (response) => {
 }
 
 const normalizeDataObject = (obj) => {
-  return {
-    ...obj,
-    category: obj.categories,
-    users: obj.users_permissions_users,
-  }
+  let str = JSON.stringify(obj)
+  
+  str = str.replaceAll('_id', 'id');
+  const newObj = JSON.parse(str)
+  const result = { ...newObj, category: newObj.categories }
+  return result;
 }
 
 export const normalizeData = (data) => {
@@ -104,19 +105,19 @@ export const checkIfUserVoted = (game, userId) => {
 export const vote = async (url, jwt, usersArray) => {
   try {
     const response = await fetch(url, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${jwt}`,
       },
-      body: JSON.stringify({ users_permissions_users: usersArray }),
-    })
+      body: JSON.stringify({ users: usersArray }),
+    });
     if (response.status !== 200) {
-      throw new Error('Ошибка голосования')
+      throw new Error("Ошибка голосования");
     }
-    const result = await response.json()
-    return result
+    const result = await response.json();
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
-}
+};
